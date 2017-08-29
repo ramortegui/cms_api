@@ -8,7 +8,6 @@ defmodule CmsApi.CMS.Author do
     field :bio, :string
     field :genre, :string
     field :role, :string
-    field :user_id, :id
     has_many :pages, Page
     belongs_to :user, CmsApi.Accounts.User
 
