@@ -1,7 +1,7 @@
 defmodule CmsApi.CMS.Author do
   use Ecto.Schema
   import Ecto.Changeset
-  alias CmsApi.CMS.Author
+  alias CmsApi.CMS.{Author, Page}
 
 
   schema "authors" do
@@ -9,6 +9,8 @@ defmodule CmsApi.CMS.Author do
     field :genre, :string
     field :role, :string
     field :user_id, :id
+    has_many :pages, Page
+    belongs_to :user, CmsApi.Accounts.User
 
     timestamps()
   end

@@ -6,7 +6,8 @@ defmodule CmsApi.CMS do
   import Ecto.Query, warn: false
   alias CmsApi.Repo
 
-  alias CmsApi.CMS.Page
+  alias CmsApi.CMS.{Page, Author}
+  alias CmsApi.Accounts
 
   @doc """
   Returns the list of pages.
@@ -18,7 +19,9 @@ defmodule CmsApi.CMS do
 
   """
   def list_pages do
-    Repo.all(Page)
+    Page
+    |> Repo.all()
+    |> Repo.preload(author: [user: :credential]) 
   end
 
   @doc """
@@ -35,7 +38,11 @@ defmodule CmsApi.CMS do
       ** (Ecto.NoResultsError)
 
   """
-  def get_page!(id), do: Repo.get!(Page, id)
+  def get_page!(id) do
+    Page
+    |> Repo.get!(id)
+    |> Repo.preload(author: [user: :credential])
+  end
 
   @doc """
   Creates a page.
@@ -131,7 +138,11 @@ defmodule CmsApi.CMS do
       ** (Ecto.NoResultsError)
 
   """
-  def get_author!(id), do: Repo.get!(Author, id)
+  def get_author!(id) do
+    Author
+    |> Repo.get!(id)
+    |> Repo.preload(user: :credential)
+  end
 
   @doc """
   Creates a author.
