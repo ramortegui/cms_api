@@ -51,8 +51,7 @@ defmodule CmsApiWeb.CMS.PageController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    page = CMS.get_page!(id)
+  def delete(conn, _) do
     {:ok, _page} = CMS.delete_page(conn.assigns.page)
 
     conn
@@ -61,7 +60,7 @@ defmodule CmsApiWeb.CMS.PageController do
   end
 
   defp require_existing_author(conn, _) do
-    author = CMS.ensure_quthor_exists(conn.assigns.current_user)
+    author = CMS.ensure_author_exists(conn.assigns.current_user)
     assign(conn, :current_author, author)
   end
 

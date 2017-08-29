@@ -64,7 +64,7 @@ defmodule CmsApi.CMS do
   end
 
 
-  def ensuere_author_exists(%Accounts.User{} = user) do
+  def ensure_author_exists(%Accounts.User{} = user) do
     %Author{user_id: user.id}
     |> Ecto.Changeset.change()
     |> Ecto.Changeset.unique_constraint(:user_id)
