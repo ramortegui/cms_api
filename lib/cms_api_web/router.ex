@@ -23,6 +23,11 @@ defmodule CmsApiWeb.Router do
                                               singleton: true
   end
 
+  scope "/cms", CmsApiWeb.CMS, as: :cms do
+    pipe_through [:browser,:authenticate_user]
+    resources "/pages", PageController
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", CmsApiWeb do
   #   pipe_through :api
