@@ -1,5 +1,7 @@
 defmodule CmsApiWeb.CMS.PageController do
   use CmsApiWeb, :controller
+  plug :require_existing_author
+  plug :authorize_page when action in [:edit, :update, :delete]
 
   alias CmsApi.CMS
   alias CmsApi.CMS.Page
@@ -15,7 +17,7 @@ defmodule CmsApiWeb.CMS.PageController do
   end
 
   def create(conn, %{"page" => page_params}) do
-    case CMS.create_page(page_params) do
+    case CMS.create_page(conn.assigns.current_author, page_params) do
       {:ok, page} ->
         conn
         |> put_flash(:info, "Page created successfully.")
@@ -39,7 +41,7 @@ defmodule CmsApiWeb.CMS.PageController do
   def update(conn, %{"id" => id, "page" => page_params}) do
     page = CMS.get_page!(id)
 
-    case CMS.update_page(page, page_params) do
+    case CMS.update_page(conn.assigns.page, page_params) do
       {:ok, page} ->
         conn
         |> put_flash(:info, "Page updated successfully.")
@@ -51,10 +53,28 @@ defmodule CmsApiWeb.CMS.PageController do
 
   def delete(conn, %{"id" => id}) do
     page = CMS.get_page!(id)
-    {:ok, _page} = CMS.delete_page(page)
+    {:ok, _page} = CMS.delete_page(conn.assigns.page)
 
     conn
     |> put_flash(:info, "Page deleted successfully.")
     |> redirect(to: cms_page_path(conn, :index))
+  end
+
+  defp require_existing_author(conn, _) do
+    author = CMS.ensure_quthor_exists(conn.assigns.current_user)
+    assign(conn, :current_author, author)
+  end
+
+  defp authorize_page(conn, _) do
+    page = CMS.get_page!(conn.params["id"])
+
+    if conn.assigns.current_author.id == page.author_id do
+      assign(conn, :page, page)
+    else
+      conn
+      |> put_flash(:error, "You can't modify that page")
+      |> redirect(to: cms_page_path(conn, :index))
+      |> halt()
+    end
   end
 end
